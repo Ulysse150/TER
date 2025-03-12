@@ -85,71 +85,40 @@ int main(int argc, char *argv[]){
   GEN h = mkvec2(gmodulo(stoi(4), stoi(5)), gmodulo(stoi(3), stoi(5)));
 
 
-  pari_printf("g = %Ps\n", g);
-  pari_printf("h = %Ps\n", h);
+  //pari_printf("g = %Ps\n", g);
+  //pari_printf("h = %Ps\n", h);
 
   GEN a = initListModulo(5, 4, 2, -1);
   GEN b = initListModulo(5, 1, 4, -1);
 
 
-  pari_printf("a = %Ps\n", a);
-  pari_printf("b = %Ps\n", b);
+  //pari_printf("a = %Ps\n", a);
+ //pari_printf("b = %Ps\n", b);
 
-  GEN c = dot(a, b);
+  //GEN c = dot(a, b);
 
-  pari_printf("<a,b>=c= %Ps\n", c);
+  //pari_printf("<a,b>=c= %Ps\n", c);
 
-  pari_printf("g^a = %Ps\n",powerG(g, a));
+  //pari_printf("g^a = %Ps\n",powerG(g, a));
  
-  pari_printf("h^b = %Ps\n", powerG(h, b));
+  //pari_printf("h^b = %Ps\n", powerG(h, b));
   
-  GEN P = gadd(powerG(g, a), powerG(h, b));
-  pari_printf("P = %Ps\n", P);
-
-
-  prover *prov = initProver(g, h, u, P, a, b, zpZ);
-  verifieur *verif = initVerifieur(g, h, u, P, zpZ);
 
   
   
 
 
-  GEN n1 = stoi(7);
+ 
 
 
   
 
 
  /*pari_printf("%Ps\n", zpZ->pow(stoi(7), stoi(4))); */
+  int affiche = 1;
+ 
 
-  GEN x1 = gmodulo(stoi(7), stoi(15));
-  GEN y = gmodulo(stoi(4), stoi(15));
-
-  //GEN out = zpZ->mul(x, y);
-
-
-  GEN LR = proverfirstComputation(prov, a,b,g,h);
-  pari_printf("Left and Right : %Ps\n", LR);
-
-  //pari_printf("%Ps\n",out);
-
-  pari_printf("g^c = %Ps\n", powerSingle(zpZ, g, c));
-  //GEN liste = initListModulo(7, 4, 2, 1, 3, 6, 5, -1);
-
-  pari_printf("g*h = %Ps\n",mulVectors(zpZ, g, h));
-
-  //pari_printf("%Ps\n", liste);
-  GEN po = gmodulo(stoi(3), stoi(5));
-
-  GEN x = chooseX(5);
-
-  pari_printf("x = %Ps\n", x);
-
-  pari_printf("x^-1 = %Ps\n", gpow(po, stoi(-1), 1));
-
-
-
-  int p = 17;
+  int p = 17; 
   int n = 8;
 
   Group *G = initZpZ(p, ADD);
@@ -160,15 +129,15 @@ int main(int argc, char *argv[]){
   a = initListModulo(17, 4, 5, 6, 2, 1, 5, 9, 15, -1);
   b = initListModulo(17, 3, 7, 8, 16, 4, 3, 2, 7, -1);
   u = gmodulo(stoi(10),stoi(17));
-  P = buildP(G, g, h, a,b, u);
+  GEN P = buildP(G, g, h, a,b, u);
 
-  pari_printf("P = %Ps\n", P);
+  //pari_printf("P = %Ps\n", P);
 
   prover *bob = initProver(g,h,u,P,a,b,G);
   verifieur *alice = initVerifieur(g,h,u,P,G);
 
 
-  result output = zeroKnowledgeProof(bob, alice, G, 8, 17);
+  result output = zeroKnowledgeProof(bob, alice, G, 8, 17, 1);
   printf("Result = %s\n", Char(output) );
   
   /*
