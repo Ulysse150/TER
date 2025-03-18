@@ -181,14 +181,7 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
     GEN leftG = left(g); GEN rightG = right(g); 
     GEN leftH = left(h); GEN rightH = right(h);
   
-    if (affiche){
-
-      pari_printf("a = %Ps\n", a);
-      pari_printf("b = %Ps\n", b);
-
-      pari_printf("g = %Ps\n", g);
-      pari_printf("h = %Ps\n", h);
-    }
+  
 
     GEN cl = dot(leftA, rightB); GEN cr = dot(rightA, leftB);
 
@@ -229,13 +222,7 @@ GEN proversecondComputation(prover *bob, GEN a, GEN b, GEN x, int affiche){
   GEN x1 = x;
   GEN invX = gpow(x1, stoi(-1), 1);
   
-  if (affiche){
-    pari_printf("a = %Ps\n", a);
-    pari_printf("b = %Ps\n", b);
-    pari_printf("x = %Ps\n", x);
-    pari_printf("x^-1 = %Ps\n", invX);
-  }
-
+  
   GEN leftA = left(a);
   GEN rightA = right(a);
   GEN leftB = left(b);
@@ -264,13 +251,7 @@ GEN computationCommon(Group *G, GEN L, GEN R, GEN P, GEN g, GEN h, GEN x, int af
   GEN g2 = mulVectors(G, powerSingle(G, leftG, invX ), powerSingle(G, rightG, x));
   
   GEN h2 = mulVectors(G, powerSingle(G, leftH, x ), powerSingle(G, rightH, invX));
-  if (affiche){
-    pari_printf("g = %Ps\n",g);
-    pari_printf("g2 = %Ps\n",g2);
-    pari_printf("h = %Ps\n",h);
-    pari_printf("h2 = %Ps\n",h2);
-  }
-  
+ 
   Loi mul = G->mul;
 
   GEN xCarre = gpow(x, stoi(2), 1);
@@ -291,37 +272,45 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
   if (n == 1){ //Cas de base
     if (affiche){
       printf("-----------------------------------------\n");
-      printf("Vérification finale sur  :");
-      pari_printf("a = %Ps, b = %Ps, g = %Ps h= %Ps u = %Ps P =%Ps\n",
+      printf("Cas de base atteint.\n");
+      printf("Vérification finale sur  :\n ");
+      pari_printf("-      a = %Ps, b = %Ps, g = %Ps h= %Ps u = %Ps P =%Ps\n",
           a,b,g,h,alice->u, P
       
       );
     }
     result r =  check(alice, a, b, g, h , P);
     if (affiche){
-      printf("%s\n", Char(r));
+      printf("## Verdict vérifieur : %s\n", Char(r));
     }
     return check(alice, a, b, g, h , P);
   }else{
 
     if (affiche){
       printf("-----------------------------------------\n");
-      printf("Appel recursif protocol avec n = %d\n", n);
+      printf("## Appel recursif avec n = %d\n", n);
+      pari_printf("-      g = %Ps\n", g);
+      pari_printf("-      h = %Ps\n", h);
+      pari_printf("-      a = %Ps\n", a);
+      pari_printf("-      b = %Ps  \n", b);
+      
+    
     }
     
+
 
     GEN leftRight = proverfirstComputation(bob, a, b, g, h, affiche);
 
     GEN L = gel(leftRight, 1); GEN R = gel(leftRight, 2);
 
     if (affiche){
-      pari_printf("Prover a calculé L  = %Ps et R = %Ps\n", L, R);
+      pari_printf("Le prouveur a calculé L  = %Ps et R = %Ps  \n", L, R);
     }
 
     GEN x = verifierChooseX(p);
 
     if (affiche){
-      pari_printf("Le verifieur a choisi x = %Ps\n", x);
+      pari_printf("Le verifieur a choisi x = %Ps  \n", x);
     }
 
     GEN common = computationCommon(bob->groupe, L, R, P, g, h, x, affiche);
@@ -329,14 +318,16 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
     GEN g2 = gel(common, 1); GEN h2 = gel(common, 2); GEN P2 = gel(common, 3);
 
     if (affiche){
-      pari_printf("Les calculs en communs on ete effectues.\n");
-      pari_printf("Le proveur et le verifieur ont calcule : \ng' = %Ps \nh' = %Ps \nP' = %Ps\n", g2, h2, P2);
+      pari_printf("Les calculs en communs on ete effectues.  \n");
+      pari_printf("Le prouveur et le verifieur ont calcule : \n-      g' = %Ps \n-      h' = %Ps \n-      P' = %Ps\n", g2, h2, P2);
     }
 
     GEN ab = proversecondComputation(bob,a,b ,x, affiche );
 
     GEN a2 = gel(ab, 1); GEN b2 = gel(ab, 2);
-      
+    if (affiche){
+      pari_printf("Le prouveur a calculé  : \n-     a' = %Ps\n-     b' = %Ps\n", a2, b2);
+    }
 
     return protocolRecursive(bob, alice,g2, h2, u, P2, a2, b2 ,n/2,p, affiche);
 
@@ -347,7 +338,7 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
 result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, int p, int affiche){
 
   if (affiche){
-    printf("Lancement protocole avec n = %d et p = %d\n", n, p);
+    printf("# Lancement protocole avec n = %d et p = %d\n", n, p);
   }
   
  

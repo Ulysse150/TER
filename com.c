@@ -109,13 +109,16 @@ int main(int argc, char *argv[]){
 
 
  
-
-
+  int affiche;
+  if (argc > 1){
+    affiche = atoi(argv[1]);
+  }else{
+    affiche = 0;
+  }
   
 
 
  /*pari_printf("%Ps\n", zpZ->pow(stoi(7), stoi(4))); */
-  int affiche = 1;
  
 
   int p = 17; 
@@ -131,14 +134,16 @@ int main(int argc, char *argv[]){
   u = gmodulo(stoi(10),stoi(17));
   GEN P = buildP(G, g, h, a,b, u);
 
+  //P = gmodulo(stoi(4), stoi(17));
+
   //pari_printf("P = %Ps\n", P);
 
   prover *bob = initProver(g,h,u,P,a,b,G);
   verifieur *alice = initVerifieur(g,h,u,P,G);
 
 
-  result output = zeroKnowledgeProof(bob, alice, G, 8, 17, 1);
-  printf("Result = %s\n", Char(output) );
+  result output = zeroKnowledgeProof(bob, alice, G, 8, 17, affiche);
+  //printf("Result = %s\n", Char(output) );
   
   /*
 
