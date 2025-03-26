@@ -103,6 +103,7 @@ int main(int argc, char *argv[]){
  
   //pari_printf("h^b = %Ps\n", powerG(h, b));
   
+  
 
   
   
