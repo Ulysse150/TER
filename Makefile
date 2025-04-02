@@ -4,9 +4,9 @@ CFLAGS =
 LDFLAGS = -lpari
 INCLUDES = -I.
 SOURCES1 = utilities.c group.c proofProtocol.c main1.c
-SOURCES2 = utilities.c group.c proofProtocol.c elliptic.c main2.c
+SOURCES2 = utilities.c group.c proofProtocol.c  main2.c
 HEADERS1 = utilities.h group.h proofProtocol.h
-HEADERS2 = utilities.h group.h proofProtocol.h elliptic.h
+HEADERS2 = utilities.h group.h proofProtocol.h 
 OBJECTS1 = $(SOURCES1:.c=.o)
 OBJECTS2 = $(SOURCES2:.c=.o)
 EXECUTABLE1 = main1

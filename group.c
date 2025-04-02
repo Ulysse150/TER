@@ -11,6 +11,7 @@ Group *initGroup(Loi loi, GEN one){
 
     G->mul = loi;
     G->one = one;
+   
 
    
 
@@ -18,7 +19,6 @@ Group *initGroup(Loi loi, GEN one){
 
     return G;
 }
-
 
 
 

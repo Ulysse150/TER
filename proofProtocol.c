@@ -188,6 +188,7 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
 
 
     GEN L1 = powerVector(bob->groupe, rightG, leftA);
+    //pari_printf("L1 = %Ps\n", L1);
     GEN L2 = powerVector(bob->groupe, leftH,rightB );
     GEN L3 = power(bob->groupe, bob->u, cl);
 
@@ -300,6 +301,7 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
 
 
     GEN leftRight = proverfirstComputation(bob, a, b, g, h, affiche);
+   
 
     GEN L = gel(leftRight, 1); GEN R = gel(leftRight, 2);
 

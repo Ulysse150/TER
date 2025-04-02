@@ -1,6 +1,9 @@
 #include "elliptic.h"
 
 
+
+
+
 GEN
 courbe(GEN a, GEN b, GEN p, long prec)
 {

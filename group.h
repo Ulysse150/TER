@@ -17,7 +17,7 @@ typedef enum  {
 // C est à dire une fonction prennant GEN x, GEN y
 // Et renvoyant une loi de groupe dessus ()
 // Une loi est une fonction de signature (GEN, GEN) -> GEN
-typedef GEN (*Loi)(GEN, GEN);
+typedef GEN (*Loi)(GEN,GEN);
 
 typedef struct{
     /*On definit un  groupe par sa loi de composition
@@ -25,6 +25,8 @@ typedef struct{
     */
     Loi mul;
     GEN one;
+
+   
 
 } Group;
 
