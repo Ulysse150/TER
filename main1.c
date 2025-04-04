@@ -125,16 +125,16 @@ int main(int argc, char *argv[]){
   int p = 17; 
   int n = 8;
 
-  Group *G = initZpZ(p, ADD);
+  Group *G = initZpZ(p+1, MUL);
 
-  g = initListModulo(17, 4, 5, 7, 8, 9, 12, 13, 15, -1);
-  h = initListModulo(17, 7, 2, 3, 4, 12, 1, 14, 16, -1);
+  g = initListModulo(p+1, 4, 5, 7, 8, 9, 12, 13, 15, -1);
+  h = initListModulo(p+1, 7, 2, 3, 4, 12, 1, 14, 16, -1);
 
-  a = initListModulo(17, 4, 5, 6, 2, 1, 5, 9, 15, -1);
-  b = initListModulo(17, 3, 7, 8, 16, 4, 3, 2, 7, -1);
-  u = gmodulo(stoi(10),stoi(17));
+  a = initListModulo(p, 7, 5, 6, 2, 1, 5, 9, 15, -1);
+  b = initListModulo(p, 3, 7, 8, 16, 4, 3, 2, 7, -1);
+  u = gel(h, 4);
   GEN P = buildP(G, g, h, a,b, u);
-
+ 
   //P = gmodulo(stoi(4), stoi(17));
 
   //pari_printf("P = %Ps\n", P);
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]){
   verifieur *alice = initVerifieur(g,h,u,P,G);
 
 
-  result output = zeroKnowledgeProof(bob, alice, G, 8, 17, affiche);
+  result output = zeroKnowledgeProof(bob, alice, G, 8, p, affiche);
   //printf("Result = %s\n", Char(output) );
   
   /*

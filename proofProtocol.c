@@ -185,22 +185,35 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
 
     GEN cl = dot(leftA, rightB); GEN cr = dot(rightA, leftB);
 
-
-
+  
     GEN L1 = powerVector(bob->groupe, rightG, leftA);
+   
     //pari_printf("L1 = %Ps\n", L1);
     GEN L2 = powerVector(bob->groupe, leftH,rightB );
+    
     GEN L3 = power(bob->groupe, bob->u, cl);
+   //pariprintf("L1 = %Ps \n", L1);
+  // pariprintf("L2 = %Ps \n", L2);
+   //pariprintf("L3 = %Ps \n", L3);
+  // pariprintf("cl = %Ps\n", cl);
 
     GEN L = mul(L1, mul(L2, L3));
-
+    
+    
     GEN R1 = powerVector(bob->groupe, leftG, rightA);
     GEN R2 = powerVector(bob->groupe,rightH, leftB );
     GEN R3 = power(bob->groupe, bob->u, cr);
+
+   // pariprintf("R1 = %Ps \n", R1);
+  // pariprintf("R2 = %Ps \n", R2);
+  // pariprintf("R3 = %Ps \n", R3);
+  // pariprintf("cr = %Ps\n", cr);
+    
+
    
     
     GEN R = mul(R1, mul(R2, R3));
-
+    
     return mkvec2(L, R);
 }
 
@@ -208,6 +221,9 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
 GEN verifierChooseX(int p){
 
     GEN n = gadd(gen_1, genrand(stoi(p-1)));
+
+
+    n = stoi(7);
     return gmodulo(n, stoi(p));
 
    
@@ -223,7 +239,7 @@ GEN proversecondComputation(prover *bob, GEN a, GEN b, GEN x, int affiche){
   GEN x1 = x;
   GEN invX = gpow(x1, stoi(-1), 1);
   
-  
+  pariprintf("x^-1 = %Ps\n",invX);
   GEN leftA = left(a);
   GEN rightA = right(a);
   GEN leftB = left(b);
@@ -235,6 +251,9 @@ GEN proversecondComputation(prover *bob, GEN a, GEN b, GEN x, int affiche){
   GEN a2 = addVectors(mulConstante(leftA,x1), mulConstante(rightA,invX));
   GEN b2 = addVectors(mulConstante(leftB,invX), mulConstante(rightB,x1));
 
+
+  a2 = gadd(gmul(leftA, x1), gmul(rightA, invX));
+  b2 = gadd(gmul(leftB, invX), gmul(rightB, x1));
   
   return mkvec2(a2, b2);
 }
@@ -250,21 +269,22 @@ GEN computationCommon(Group *G, GEN L, GEN R, GEN P, GEN g, GEN h, GEN x, int af
 
   
   GEN g2 = mulVectors(G, powerSingle(G, leftG, invX ), powerSingle(G, rightG, x));
-  
+
   GEN h2 = mulVectors(G, powerSingle(G, leftH, x ), powerSingle(G, rightH, invX));
  
   Loi mul = G->mul;
 
   GEN xCarre = gpow(x, stoi(2), 1);
   GEN xCarreInv = gpow(xCarre, stoi(-1), 1);
-
+ 
   GEN leftSquare = power(G, L, xCarre);
  
 
   GEN rightSquare = power(G, R, xCarreInv);
-
+ 
 
   GEN P2 = mul(leftSquare, mul(P, rightSquare));
+  
   return mkvec3(g2, h2, P2);
 
 }
@@ -352,8 +372,10 @@ GEN buildP(Group *G, GEN g, GEN h, GEN a, GEN b, GEN u){
   GEN G2 = powerVector(G, g, a);
   GEN c = dot(a, b);
   GEN G3 = powerVector(G ,h, b);
-  GEN G4 = powerVector(G, u, c);
+  //GEN G4 = powerVector(G, u, c);
+  GEN G4 = power(G, u, c);
  
+  pariprintf("u = %Ps\n", u);
 
   return G->mul(G2, G->mul(G3, G4));
 

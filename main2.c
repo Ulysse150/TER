@@ -66,6 +66,14 @@ GEN pointPower(GEN E, GEN x, int n){
 
 
 
+
+
+
+
+
+
+
+
 /* Will return  n points from elliptic curve*/
 GEN genPoints(GEN courbe, int n){
   GEN gens = ellgenerators(courbe);
@@ -75,20 +83,19 @@ GEN genPoints(GEN courbe, int n){
   GEN gen = gel(gens, 1);
   //pari_printf("gen = %Ps\n", gen);
 
-  pari_printf("%Ps  \n", gen);
-
+ 
   for(int i = 1; i <= n; i++){
     GEN ind =  gadd(gen_1, genrand(stoi(n-1)));
     long entier  = itos(ind);
-    pari_printf("i = %d ind = %Ps x = %Ps\n",i, ind, pointPower(courbe, gen , entier) );
     gel(output, i) = pointPower(courbe, gen , entier);
+    //gel(output, i) = mkvec2(gmodulo(stoi(41), stoi(101)), gmodulo(stoi(41), stoi(101)));
   }
  
   return output;
 }
 
 int main(int argn,char *argv[]){
-    pari_init(1000000, 2); // Initialize PARI with memory allocation
+    pari_init(1000000000, 2); // Initialize PARI with memory allocation
 
     // to get real random values
     pari_ulong seed = (pari_ulong)time(NULL);
@@ -102,44 +109,57 @@ int main(int argn,char *argv[]){
     //testing the algorithm on elliptic curves
 
     Group *groupe = initCourbe(14, 15, 101, &E);
-    pari_printf("%Ps\n",E);
-
-    GEN n = stoi(16);
-
-    GEN g = genPoints(E, 8);
-    GEN h = genPoints(E, 8);
-
-
-    GEN a = initListModulo(17, 4, 5, 6, 2, 1, 5, 9, 15, -1);
-    GEN b = initListModulo(17, 3, 7, 8, 16, 4, 3, 2, 7, -1);
-   
-
-    GEN u = mkvec2(gmodulo(stoi(7), stoi(101)),   gmodulo(stoi(70), stoi(101)));
-
-    pari_printf("g = %Ps\n", g);
-    pari_printf("a = %Ps\n", a);
-    GEN c = dot(a, b);
-    u = mkvec(gel(h, 3));
-    pari_printf("u = %Ps  c = %Ps \n", u, c);
-
-    //GEN z = powerSingle(groupe, u, c);
-   
-   
+  
+ // Group *zpz = initZpZ(p, ADD);   
+   // GEN g = initListModulo(29, 14, 15, 12, 23, -1);
+    //GEN h = initListModulo(29, 7, 2, 4, 5, -1);
+  //  GEN a = initListModulo(17, 4, 8,5, 14, -1);
+   // GEN b = initListModulo(17, 2, 3, 4, 12, -1);
+    //pari_printf("a*b = %Ps\n",mulVectors(zpz, a, b))
+  // GEN a = initListModulo(7, 1, 2, -1);
+  // GEN b = initListModulo(7, 2, 3, -1);
 
 
-    //pari_printf("z1 = %Ps\n z2 = %Ps\n",z1, z2);
-    //pari_printf("Hello world g = %Ps!\n",g);
-   GEN P = mkvec(buildP(groupe, g, h, a,b, u));
+  GEN g = genPoints(E, 8);
+  GEN h = genPoints(E, 8);
 
 
+  GEN a = initListModulo(100, 4, 5, 6, 2, 1, 5, 9, 15, -1);
+  GEN b = initListModulo(100, 3, 7, 8, 16, 4, 3, 2, 7, -1);
+
+   int p = 100;
+
+  // GEN a = initListModulo(p, 4, 8,5, 14, -1);
+  // GEN b = initListModulo(p, 2, 3, 4, 12, -1);
+    GEN  u = gel(h, 1);
+  
+    GEN P = buildP(groupe, g, h, a,b, u);
+  
     prover *bob = initProver(g,h,u,P,a,b,groupe);
     verifieur *alice = initVerifieur(g,h,u,P,groupe);
 
-    result output = zeroKnowledgeProof(bob, alice, groupe, 8, 17, 1);
+   result output = zeroKnowledgeProof(bob, alice, groupe, 8, p, 1);
+
+    GEN y = moduk(7, 17);
+    GEN x = moduk(9, 29);
+   
+
+    //GEN z = power(zpz, x, y);
+    //pari_printf("x^y = %Ps y^x = %Ps \n", z, (power(groupe, y, x))    );
+    
+     GEN p1 = strtoi("0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
+     a = strtoi("0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc");
+     b = strtoi("0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b");
+    
+    // Définir le point générateur G
+    GEN Gx = strtoi("0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296");
+    GEN Gy = strtoi("0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5");
+
+    pariprintf("p1 = %Ps\n", p1);
 
    
 
-
     pari_close();
+    return 0;
 
 }

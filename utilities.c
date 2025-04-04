@@ -1,6 +1,8 @@
 #include "utilities.h"
 
-
+GEN moduk(int a, int b){
+    return gmodulo(stoi(a), stoi(b));
+}
 
 GEN initListModulo(int p, ...) {
     va_list args;

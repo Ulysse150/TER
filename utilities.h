@@ -9,7 +9,7 @@
 GEN chooseX(int p);
 
 
-
+GEN moduk(int a, int b);
 
 /*   Prend une liste d'entiers
     l[0] l[1] ... l[n]

@@ -42,22 +42,37 @@ GEN Mod(int i, int p){
 
 
 
-GEN power(Group *g, GEN x, GEN y){
-    GEN output = g->one;
-
-    GEN i = gen_0;
-    GEN y_lifted = lift(y);
 
 
-    while (gcmp(i, y_lifted) == -1){
-        output = g->mul(output, x);
-        i = gadd(i, gen_1);
+GEN powerRec(Loi mul, GEN x, int i){
+    if (i == 1){
+        return x;
+    }else{
+        if (i %2 == 0){
+            GEN acc = powerRec(mul, x, i/2);
+            return mul(acc, acc);
+        }else{
+            GEN acc = powerRec(mul, x, i-1);
+            return mul(x, acc);        }
     }
-    
-
-    return output;
-
 }
+
+
+GEN power(Group *g, GEN x, GEN y){
+  
+    GEN y3 = gel(y, 2);
+    int i = itos(y3);
+
+    if (i == 0){
+        return g->one;
+    }else{
+        return powerRec(g->mul, x, i);
+    }
+
+    
+}
+
+
 
 GEN powerVector(Group *g, GEN a, GEN b){
     GEN output = g->one;
@@ -65,12 +80,15 @@ GEN powerVector(Group *g, GEN a, GEN b){
 
     int N = lg(a) - 1;
 
+   
+
 
     for (int i = 1; i <= N ; i++){
         current = power(g, gel(a, i),gel(b, i));
+       
         output = g->mul(output, current);
     }
-
+   
 
     return output;
 }

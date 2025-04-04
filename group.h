@@ -77,4 +77,18 @@ GEN Mod(int i, int p);
  */
 GEN mulVectors(Group *group, GEN x, GEN y);
 
+
+
+
+
+
+
+
+/* 
+ *
+ *
+ */
+GEN powerRec(Loi mul, GEN x, int i);
+
+
 #endif
