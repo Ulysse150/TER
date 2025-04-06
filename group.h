@@ -40,7 +40,7 @@ Group *initGroup(Loi loi, GEN one);
 /*Definit la puissance a partir d'une loi */
 
 /* Initie le groupe (Z/pZ) en loi addittive ou multiplicative*/
-Group *initZpZ(int p, loiComp l);
+Group *initZpZ(GEN p, loiComp l);
 
 
 /* Renvoie x^y  = x * ... * x  ) y fois
@@ -48,6 +48,12 @@ Group *initZpZ(int p, loiComp l);
 
 */
 GEN power(Group *g, GEN x, GEN y);
+
+
+
+GEN powerRec2(Loi mul, GEN x, GEN i);
+
+GEN power2(Group *G, GEN x, GEN i);
 
 
 /*  

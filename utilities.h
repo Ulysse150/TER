@@ -17,8 +17,7 @@ GEN moduk(int a, int b);
     -1 est le dernier
 */
 GEN initListModulo(int p ,...);
-
-
+GEN initListModulo2(GEN p1, int p, ...);
 
 /* Here we suppose we are talking about vectors of Z/pZ  */
 

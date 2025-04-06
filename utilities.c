@@ -30,6 +30,33 @@ GEN initListModulo(int p, ...) {
     return output;
 }
 
+GEN initListModulo2(GEN p1, int p, ...) {
+    va_list args;
+    va_start(args, p);
+
+    int count = 0;
+    int current;
+    do {
+        current = va_arg(args, int);
+        if (current != -1) count++;
+    } while (current != -1);
+
+    va_end(args);
+
+    
+    GEN output = cgetg(count + 1, t_VEC); 
+
+    va_start(args, p);
+    for (int i = 1; i <= count; i++) {
+        current = va_arg(args, int);
+        gel(output, i) = gmodulo(stoi(current), p1);
+    }
+    va_end(args);
+
+    pariprintf("output = %Ps\n", output);
+    return output;
+}
+
 
 GEN addVectors(GEN x, GEN y){
 

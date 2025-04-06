@@ -23,15 +23,15 @@ Group *initGroup(Loi loi, GEN one){
 
 
 
-Group *initZpZ(int p, loiComp l){
+Group *initZpZ(GEN p, loiComp l){
 
 
     switch (l) {
         case ADD : 
-            return initGroup(gadd, gmodulo(stoi(0), stoi(p)));
+            return initGroup(gadd, gmodulo(stoi(0), p));
             break;
         case MUL: 
-            return initGroup(gmul, gmodulo(stoi(1), stoi(p)));
+            return initGroup(gmul, gmodulo(stoi(1), p));
             break;
     }
 }
@@ -74,21 +74,61 @@ GEN power(Group *g, GEN x, GEN y){
 
 
 
+
+GEN powerRec2(Loi mul, GEN x, GEN i){
+   
+    if (gequal(i, gen_1)){
+        return x;
+    }else{
+
+        GEN pa = gmod(i, gen_2);
+        if (gequal(pa, gen_0)){
+            GEN acc = powerRec2(mul, x, gshift(i, -1));
+            return mul(acc, acc);
+        }else{
+            GEN acc = powerRec2(mul, x, gsub(i, gen_1));
+            return mul(x, acc);        }
+    }
+}
+
+GEN power2(Group *g, GEN x, GEN y){
+  
+    GEN i = lift(y);
+  
+
+    if (gequal(i, gen_0)){
+        return g->one;
+    }else{
+        return powerRec2(g->mul, x, i);
+    }
+
+    
+}
+
+
 GEN powerVector(Group *g, GEN a, GEN b){
     GEN output = g->one;
     GEN current;
 
     int N = lg(a) - 1;
 
-   
-
+ //  pariprintf("a = %Ps\n", a);
+  // pariprintf("b = %Ps\n", b);
+    
 
     for (int i = 1; i <= N ; i++){
-        current = power(g, gel(a, i),gel(b, i));
+
+       
+
+        
+        current = power2(g, gel(a, i),gel(b, i));
+      //  pariprintf( "i = %d\n", i);
+       // pariprintf(" i = %d current = %Ps\n",i, current);
        
         output = g->mul(output, current);
     }
    
+    //output = g->mul(output, power2(g, gel(a, N), gel(b, N)));
 
     return output;
 }
@@ -100,7 +140,7 @@ GEN powerSingle(Group *g, GEN x, GEN y){
     GEN output = cgetg(size+1, t_VEC);
 
     for (int i = 1; i <= size; i++){
-        gel(output, i) = power(g, gel(x,i), y);
+        gel(output, i) = power2(g, gel(x,i), y);
     }
     return output;
 }

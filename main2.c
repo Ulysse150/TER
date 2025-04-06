@@ -1,3 +1,4 @@
+
 /*-*- compile-command: "cc -c -o com.o -g -O3 -Wall -fomit-frame-pointer -fno-strict-aliasing -fPIC -I\"/usr/include/x86_64-linux-gnu\" com.c && cc -o com.so -shared -g -O3 -Wall -fomit-frame-pointer -fno-strict-aliasing -fPIC -Wl,-shared -Wl,-z,relro com.o -lc -lm -L/usr/lib/x86_64-linux-gnu -lpari"; -*-*/
 #include "proofProtocol.h"
 #include <pari/pari.h>
@@ -42,8 +43,8 @@ void init_nul(void)	  /* void */
 }
 
 
-Group *initCourbe(int a, int b, int p, GEN *ptr){
-    E = courbe(stoi(a), stoi(b), stoi(p), 1);
+Group *initCourbe(GEN a, GEN b, GEN p, GEN *ptr){
+    E = courbe(a, b, p, 1);
     *ptr = E;
     Group *G = (Group*)malloc(sizeof(Group));
     init_nul();
@@ -51,17 +52,6 @@ Group *initCourbe(int a, int b, int p, GEN *ptr){
     G->mul = loi;
     return G;
 
-}
-
-
-/* Return the repetition of additive law on x done n times */
-GEN pointPower(GEN E, GEN x, int n){
-    
-    GEN output = o;
-    for(int i = 0; i < n; i++){
-      output = elladd(E, x, output);
-    }
-    return output;
 }
 
 
@@ -75,19 +65,19 @@ GEN pointPower(GEN E, GEN x, int n){
 
 
 /* Will return  n points from elliptic curve*/
-GEN genPoints(GEN courbe, int n){
-  GEN gens = ellgenerators(courbe);
+
+GEN genPoints(Group *G, GEN gen, int n){
+ 
   
 
   GEN output = cgetg(n+1, t_VEC);
-  GEN gen = gel(gens, 1);
   //pari_printf("gen = %Ps\n", gen);
 
  
   for(int i = 1; i <= n; i++){
     GEN ind =  gadd(gen_1, genrand(stoi(n-1)));
-    long entier  = itos(ind);
-    gel(output, i) = pointPower(courbe, gen , entier);
+    
+    gel(output, i) = power2(G, gen, ind);
     //gel(output, i) = mkvec2(gmodulo(stoi(41), stoi(101)), gmodulo(stoi(41), stoi(101)));
   }
  
@@ -108,7 +98,7 @@ int main(int argn,char *argv[]){
     
     //testing the algorithm on elliptic curves
 
-    Group *groupe = initCourbe(14, 15, 101, &E);
+   
   
  // Group *zpz = initZpZ(p, ADD);   
    // GEN g = initListModulo(29, 14, 15, 12, 23, -1);
@@ -120,25 +110,18 @@ int main(int argn,char *argv[]){
   // GEN b = initListModulo(7, 2, 3, -1);
 
 
-  GEN g = genPoints(E, 8);
-  GEN h = genPoints(E, 8);
 
 
-  GEN a = initListModulo(100, 4, 5, 6, 2, 1, 5, 9, 15, -1);
-  GEN b = initListModulo(100, 3, 7, 8, 16, 4, 3, 2, 7, -1);
 
    int p = 100;
 
   // GEN a = initListModulo(p, 4, 8,5, 14, -1);
   // GEN b = initListModulo(p, 2, 3, 4, 12, -1);
-    GEN  u = gel(h, 1);
   
-    GEN P = buildP(groupe, g, h, a,b, u);
-  
-    prover *bob = initProver(g,h,u,P,a,b,groupe);
-    verifieur *alice = initVerifieur(g,h,u,P,groupe);
+  //  prover *bob = initProver(g,h,u,P,a,b,groupe);
+  //  verifieur *alice = initVerifieur(g,h,u,P,groupe);
 
-   result output = zeroKnowledgeProof(bob, alice, groupe, 8, p, 1);
+   //result output = zeroKnowledgeProof(bob, alice, groupe, 8, p, 1);
 
     GEN y = moduk(7, 17);
     GEN x = moduk(9, 29);
@@ -148,17 +131,74 @@ int main(int argn,char *argv[]){
     //pari_printf("x^y = %Ps y^x = %Ps \n", z, (power(groupe, y, x))    );
     
      GEN p1 = strtoi("0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff");
-     a = strtoi("0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc");
-     b = strtoi("0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b");
+     GEN a = gmodulo(strtoi("0xffffffff00000001000000000000000000000000fffffffffffffffffffffffc") ,p1);
+     GEN b = gmodulo(strtoi("0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b"), p1);
     
-    // Définir le point générateur G
-    GEN Gx = strtoi("0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296");
-    GEN Gy = strtoi("0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5");
+    
+     GEN Gx = gmodulo(strtoi("0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296"), p1);
+     GEN Gy = gmodulo(strtoi("0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5"), p1);
+
+    GEN generateur = mkvec2(Gx, Gy);
+    GEN ordre = strtoi("115792089210356248762697446949407573529996955224135760342422259061068512044369");
+
+  //  p1 = stoi(101);
+ //  a = moduk(14, 101);
+ //  b = moduk(15, 101);
+
+ //  ordre = stoi(100);
+ //  generateur  = mkvec2(moduk(41, 101), moduk(27, 101)); 
+
 
     pariprintf("p1 = %Ps\n", p1);
+    pariprintf("a = %Ps\n", a);
+    pariprintf("b = %Ps\n", b);
+    
+
+
+
 
    
 
+    
+    Group *zpz = initZpZ(ordre,  ADD);
+
+    Group *groupe = initCourbe(a, b, p1, &E);
+
+    GEN g = genPoints(groupe, generateur, 4);
+    GEN h = genPoints(groupe, generateur, 4);
+
+
+    GEN a1 = initListModulo2(ordre, 47, 85, 145, 475,  -1);
+    GEN b1 = initListModulo2(ordre, 47, 85, 145, 142,  -1);
+   
+    a1 = mkvec4(gmodulo(stoi(47), ordre), gmodulo(stoi(85), ordre),gmodulo(stoi(47), ordre),gmodulo(stoi(40), ordre)
+  
+  );
+
+  b1 = mkvec4(gmodulo(stoi(47), ordre), gmodulo(stoi(85), ordre),gmodulo(stoi(47), ordre),gmodulo(stoi(40), ordre)
+  
+  );
+
+  pariprintf("A = %Ps\n", a1);
+  pariprintf("B = %Ps\n", b1);
+
+
+    GEN u = gel(g, 2);
+
+    GEN P = buildP(groupe, g, h, a1, b1, u);
+
+  //pariprintf("b1 = %Ps\n \n \n \n", b1);
+   
+
+    //GEN ge = gel(ellgenerators(E), 1);
+
+    prover *bob = initProver(g,h,u,P,a1,b1,groupe);
+    verifieur *alice = initVerifieur(g,h,u,P,groupe);
+
+  result output = zeroKnowledgeProof(bob, alice, groupe,4,ordre, 1  );
+
+  
+    printf("\n");
     pari_close();
     return 0;
 

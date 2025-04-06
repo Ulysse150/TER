@@ -93,14 +93,14 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
 GEN proversecondComputation(prover *bob, GEN a, GEN b, GEN x, int affiche);
 
 /* Verifier decides and sends x  */
-GEN verifierChooseX(int p);
+GEN verifierChooseX(GEN p);
 
 
 GEN computationCommon(Group *G, GEN L, GEN R, GEN P, GEN g, GEN h, GEN x, int affiche);
 
-result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN P, GEN a, GEN b, int n, int p, int affiche);
+result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN P, GEN a, GEN b, int n, GEN p, int affiche);
 
-result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, int p, int affiche);
+result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, GEN p, int affiche);
 
 
 /* Creates a P and 

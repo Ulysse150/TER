@@ -100,7 +100,7 @@ result check(verifieur *v,GEN a, GEN b,GEN g, GEN h, GEN P){
     GEN gauche = powerVector(v->groupe, g, a);
    
     GEN droite = powerVector(v->groupe, h, b);
-    GEN fin = power(v->groupe, v->u, c);
+    GEN fin = power2(v->groupe, v->u, c);
 
     GEN prod = mul(gauche, mul(droite,fin));
     /*On verifie que prod  egal a P*/
@@ -187,11 +187,14 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
 
   
     GEN L1 = powerVector(bob->groupe, rightG, leftA);
+    
    
     //pari_printf("L1 = %Ps\n", L1);
     GEN L2 = powerVector(bob->groupe, leftH,rightB );
+   
     
-    GEN L3 = power(bob->groupe, bob->u, cl);
+    GEN L3 = power2(bob->groupe, bob->u, cl);
+  
    //pariprintf("L1 = %Ps \n", L1);
   // pariprintf("L2 = %Ps \n", L2);
    //pariprintf("L3 = %Ps \n", L3);
@@ -200,9 +203,13 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
     GEN L = mul(L1, mul(L2, L3));
     
     
+    
     GEN R1 = powerVector(bob->groupe, leftG, rightA);
+   
     GEN R2 = powerVector(bob->groupe,rightH, leftB );
-    GEN R3 = power(bob->groupe, bob->u, cr);
+     
+    GEN R3 = power2(bob->groupe, bob->u, cr);
+    
 
    // pariprintf("R1 = %Ps \n", R1);
   // pariprintf("R2 = %Ps \n", R2);
@@ -218,13 +225,13 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
 }
 
 
-GEN verifierChooseX(int p){
+GEN verifierChooseX(GEN p){
 
-    GEN n = gadd(gen_1, genrand(stoi(p-1)));
+    GEN n = gadd(gen_1, genrand((gsub(p, gen_0))));
 
 
     n = stoi(7);
-    return gmodulo(n, stoi(p));
+    return gmodulo(n, p);
 
    
 }
@@ -239,7 +246,7 @@ GEN proversecondComputation(prover *bob, GEN a, GEN b, GEN x, int affiche){
   GEN x1 = x;
   GEN invX = gpow(x1, stoi(-1), 1);
   
-  pariprintf("x^-1 = %Ps\n",invX);
+ // pariprintf("x^-1 = %Ps\n",invX);
   GEN leftA = left(a);
   GEN rightA = right(a);
   GEN leftB = left(b);
@@ -277,10 +284,10 @@ GEN computationCommon(Group *G, GEN L, GEN R, GEN P, GEN g, GEN h, GEN x, int af
   GEN xCarre = gpow(x, stoi(2), 1);
   GEN xCarreInv = gpow(xCarre, stoi(-1), 1);
  
-  GEN leftSquare = power(G, L, xCarre);
+  GEN leftSquare = power2(G, L, xCarre);
  
 
-  GEN rightSquare = power(G, R, xCarreInv);
+  GEN rightSquare = power2(G, R, xCarreInv);
  
 
   GEN P2 = mul(leftSquare, mul(P, rightSquare));
@@ -289,7 +296,7 @@ GEN computationCommon(Group *G, GEN L, GEN R, GEN P, GEN g, GEN h, GEN x, int af
 
 }
 
-result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN P, GEN a, GEN b, int n ,int p, int affiche){
+result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN P, GEN a, GEN b, int n ,GEN p, int affiche){
   if (n == 1){ //Cas de base
     if (affiche){
       printf("-----------------------------------------\n");
@@ -357,10 +364,10 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
 }
 
 
-result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, int p, int affiche){
+result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, GEN p, int affiche){
 
   if (affiche){
-    printf("# Lancement protocole avec n = %d et p = %d\n", n, p);
+    pariprintf("# Lancement protocole avec n = %d et p = %Ps\n", n, p);
   }
   
  
@@ -370,10 +377,11 @@ result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, i
 
 GEN buildP(Group *G, GEN g, GEN h, GEN a, GEN b, GEN u){
   GEN G2 = powerVector(G, g, a);
+  pariprintf("G2 = %Ps\n", G2);
   GEN c = dot(a, b);
   GEN G3 = powerVector(G ,h, b);
   //GEN G4 = powerVector(G, u, c);
-  GEN G4 = power(G, u, c);
+  GEN G4 = power2(G, u, c);
  
   pariprintf("u = %Ps\n", u);
 
