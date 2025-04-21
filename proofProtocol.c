@@ -195,10 +195,6 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
     
     GEN L3 = power2(bob->groupe, bob->u, cl);
   
-   //pariprintf("L1 = %Ps \n", L1);
-  // pariprintf("L2 = %Ps \n", L2);
-   //pariprintf("L3 = %Ps \n", L3);
-  // pariprintf("cl = %Ps\n", cl);
 
     GEN L = mul(L1, mul(L2, L3));
     
@@ -211,11 +207,7 @@ GEN proverfirstComputation(prover *bob, GEN a, GEN b, GEN g, GEN h, int affiche)
     GEN R3 = power2(bob->groupe, bob->u, cr);
     
 
-   // pariprintf("R1 = %Ps \n", R1);
-  // pariprintf("R2 = %Ps \n", R2);
-  // pariprintf("R3 = %Ps \n", R3);
-  // pariprintf("cr = %Ps\n", cr);
-    
+
 
    
     
@@ -297,6 +289,7 @@ GEN computationCommon(Group *G, GEN L, GEN R, GEN P, GEN g, GEN h, GEN x, int af
 }
 
 result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN P, GEN a, GEN b, int n ,GEN p, int affiche){
+  
   if (n == 1){ //Cas de base
     if (affiche){
       printf("-----------------------------------------\n");
@@ -329,7 +322,6 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
 
     GEN leftRight = proverfirstComputation(bob, a, b, g, h, affiche);
    
-
     GEN L = gel(leftRight, 1); GEN R = gel(leftRight, 2);
 
     if (affiche){
@@ -341,6 +333,7 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
     if (affiche){
       pari_printf("Le verifieur a choisi x = %Ps  \n", x);
     }
+  
 
     GEN common = computationCommon(bob->groupe, L, R, P, g, h, x, affiche);
 
@@ -377,13 +370,13 @@ result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, G
 
 GEN buildP(Group *G, GEN g, GEN h, GEN a, GEN b, GEN u){
   GEN G2 = powerVector(G, g, a);
-  pariprintf("G2 = %Ps\n", G2);
+
   GEN c = dot(a, b);
   GEN G3 = powerVector(G ,h, b);
   //GEN G4 = powerVector(G, u, c);
   GEN G4 = power2(G, u, c);
  
-  pariprintf("u = %Ps\n", u);
+ // pariprintf("u = %Ps\n", u);
 
   return G->mul(G2, G->mul(G3, G4));
 

@@ -53,7 +53,6 @@ GEN initListModulo2(GEN p1, int p, ...) {
     }
     va_end(args);
 
-    pariprintf("output = %Ps\n", output);
     return output;
 }
 
