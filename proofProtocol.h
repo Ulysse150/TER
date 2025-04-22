@@ -102,6 +102,7 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
 
 result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, GEN p, int affiche);
 
+result protocolIteratif(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN P, GEN a, GEN b, int n ,GEN p, int affiche);
 
 /* Creates a P and 
 

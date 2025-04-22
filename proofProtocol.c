@@ -283,6 +283,7 @@ GEN computationCommon(Group *G, GEN L, GEN R, GEN P, GEN g, GEN h, GEN x, int af
  
 
   GEN P2 = mul(leftSquare, mul(P, rightSquare));
+
   
   return mkvec3(g2, h2, P2);
 
@@ -356,6 +357,72 @@ result protocolRecursive(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN
 }
 }
 
+result protocolIteratif(prover *bob, verifieur *alice, GEN g, GEN h, GEN u, GEN P, GEN a, GEN b, int n ,GEN p, int affiche){
+
+  GEN a2, b2, u2, P2, leftRight, common, L, R, ab, h2, g2, x;
+  for (int i = n ; i > 1; i = i/2){
+    if (affiche){
+      printf("-----------------------------------------\n");
+      printf("## Appel iteratif avec n = %d\n", n);
+      pari_printf("-      g = %Ps\n", g);
+      pari_printf("-      h = %Ps\n", h);
+      pari_printf("-      a = %Ps\n", a);
+      pari_printf("-      b = %Ps  \n", b);
+
+      ab = proverfirstComputation(bob, a, b, g, h, affiche);
+      L = gel(ab, 1); R = gel(ab, 2);  // Pas besoin de leftRight
+      cgiv(ab); // Libérer ab après extraction de L et R
+
+      if (affiche){
+        pari_printf("Le prouveur a calculé L  = %Ps et R = %Ps  \n", L, R);
+      }
+
+      x = verifierChooseX(p);
+
+      if (affiche){
+        pari_printf("Le verifieur a choisi x = %Ps  \n", x);
+      }
+
+      common = computationCommon(bob->groupe, L, R, P, g, h, x, affiche);
+      g2 = gel(common, 1); h2 = gel(common, 2); P2 = gel(common, 3);
+      cgiv(common); // Libérer common
+
+      if (affiche){
+        pari_printf("Les calculs en communs on ete effectues.  \n");
+        pari_printf("Le prouveur et le verifieur ont calcule : \n-      g' = %Ps \n-      h' = %Ps \n-      P' = %Ps\n", g2, h2, P2);
+      }
+
+      ab = proversecondComputation(bob,a,b ,x, affiche );
+      a2 = gel(ab, 1); b2 = gel(ab, 2);
+      cgiv(ab); // Libérer ab
+
+
+      if (affiche){
+        pari_printf("Le prouveur a calculé  : \n-     a' = %Ps\n-     b' = %Ps\n", a2, b2);
+      }
+
+      cgiv(g); cgiv(h); cgiv(P); cgiv(a); cgiv(b); // Libérer les anciens objets
+      g = g2; h = h2; P = P2; a = a2; b = b2; // Réassigner les pointeurs
+      cgiv(L); cgiv(R); cgiv(x); // Libérer L, R et x
+    }
+  }
+
+  if (affiche){
+    printf("-----------------------------------------\n");
+    printf("Cas de base atteint.\n");
+    printf("Vérification finale sur  :\n ");
+    pari_printf("-      a = %Ps, b = %Ps, g = %Ps h= %Ps u = %Ps P =%Ps\n",
+        a,b,g,h,alice->u, P
+    
+    );
+  }
+  result r =  check(alice, a, b, g, h , P);
+  if (affiche){
+    printf("## Verdict vérifieur : %s\n", Char(r));
+  }
+  return check(alice, a, b, g, h , P);
+}
+
 
 result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, GEN p, int affiche){
 
@@ -363,8 +430,8 @@ result zeroKnowledgeProof(prover *bob, verifieur *alice, Group *groupe, int n, G
     pariprintf("# Lancement protocole avec n = %d et p = %Ps\n", n, p);
   }
   
- 
-  return protocolRecursive(bob, alice, bob->g, bob->h, bob->u, bob->P, bob->a, bob->b, n, p, affiche);
+  return protocolIteratif(bob, alice, bob->g, bob->h, bob->u, bob->P, bob->a, bob->b, n, p, affiche);
+  //return protocolRecursive(bob, alice, bob->g, bob->h, bob->u, bob->P, bob->a, bob->b, n, p, affiche);
 }
 
 
